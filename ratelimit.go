@@ -36,11 +36,14 @@ type ModuloLimit struct {
 }
 
 func (m *ModuloLimit) handle(closure *func()) {
-	if m.cnt == 0 {
-		(*closure)()
+	m.cnt++
+	if m.cnt > m.Mod {
+		m.cnt -= m.Mod
 	}
 
-	m.cnt = (m.cnt + 1) % m.Mod
+	if m.cnt == 1 {
+		(*closure)()
+	}
 }
 
 type NPerTimeLimit struct {
