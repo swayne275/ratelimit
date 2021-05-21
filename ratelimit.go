@@ -13,14 +13,17 @@ Future improvement ideas:
 - constructors for Limiter structs (error checking)?
 */
 
-var (
-	once     sync.Once
-	instance RateLimiter
-)
+var instance RateLimiter
 
 type RateLimiter struct {
 	store  sync.Map
 	logger *log.Logger
+}
+
+func init() {
+	instance = RateLimiter{
+		logger: log.Default(),
+	}
 }
 
 type Limiter interface {
@@ -36,11 +39,14 @@ type ModuloLimit struct {
 }
 
 func (m *ModuloLimit) handle(closure *func()) {
-	if m.cnt == 0 {
-		(*closure)()
+	m.cnt++
+	if m.cnt > m.Mod {
+		m.cnt -= m.Mod
 	}
 
-	m.cnt = (m.cnt + 1) % m.Mod
+	if m.cnt == 1 {
+		(*closure)()
+	}
 }
 
 type NPerTimeLimit struct {
@@ -95,12 +101,6 @@ func (q *QuotaLimit) handle(closure *func()) {
 }
 
 func GetRateLimiter() *RateLimiter {
-	once.Do(func() {
-		instance = RateLimiter{
-			logger: log.Default(),
-		}
-	})
-
 	return &instance
 }
 
