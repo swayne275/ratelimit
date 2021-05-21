@@ -13,19 +13,17 @@ Future improvement ideas:
 - constructors for Limiter structs (error checking)?
 */
 
-func init() {
-	instance = RateLimiter{
-		logger: log.Default(),
-	}
-}
-
-var (
-	instance RateLimiter
-)
+var instance RateLimiter
 
 type RateLimiter struct {
 	store  sync.Map
 	logger *log.Logger
+}
+
+func init() {
+	instance = RateLimiter{
+		logger: log.Default(),
+	}
 }
 
 type Limiter interface {
