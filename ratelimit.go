@@ -13,8 +13,13 @@ Future improvement ideas:
 - constructors for Limiter structs (error checking)?
 */
 
+func init() {
+	instance = RateLimiter{
+		logger: log.Default(),
+	}
+}
+
 var (
-	once     sync.Once
 	instance RateLimiter
 )
 
@@ -98,12 +103,6 @@ func (q *QuotaLimit) handle(closure *func()) {
 }
 
 func GetRateLimiter() *RateLimiter {
-	once.Do(func() {
-		instance = RateLimiter{
-			logger: log.Default(),
-		}
-	})
-
 	return &instance
 }
 
